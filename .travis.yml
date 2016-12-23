@@ -1,0 +1,15 @@
+sudo: required
+dist: trusty
+# This attribute does not matter. We just choose some less popular language
+# to don't hog resources and further increase the wait time for other people
+# who use a more popular language / runtime.
+language: erlang
+env:
+  matrix:
+    - ARCH=x86_64
+    - ARCH=armhf
+install:
+  - sudo ./alpine-chroot-install
+script:
+  - /alpine/enter-chroot $USER uname -a
+  - /alpine/enter-chroot $USER env
