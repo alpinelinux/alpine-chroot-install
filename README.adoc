@@ -1,1 +1,46 @@
 = Install Alpine Linux in chroot
+:script-name: alpine-chroot-install
+:gh-name: jirutka/{script-name}
+:version: 0.0.0
+
+ifdef::env-github[]
+image:https://travis-ci.org/{gh-name}.svg?branch=master["Build Status", link="https://travis-ci.org/{gh-name}"]
+endif::env-github[]
+
+This `alpine-chroot-install` script simplifies installation of https://alpinelinux.org/[Alpine Linux] in chroot.
+Optionally it also utilizes _qemu-user_ and _binfmt_ to emulate different architecture.
+
+The main purpose of this script is to easily create Alpine environment on debian-based CI (e.g. https://travis-ci.org/[Travis CI]) and possibly emulate ARM on x86_64 CI server.
+
+Installation of Alpine Linux is a matter of seconds.
+When you run this script on Travis CI, it takes *only 32 seconds* to initialize VM, install Alpine into chroot including gcc build environment and execute first command!
+And just 9 seconds more if you run it with armhf emulation.
+
+To get some comparison, look https://github.com/vmayoral/travis_arm_test[here] how long does this take with minimal Debian.
+360 seconds!
+This is 9 times more.
+Do you see how bloated and slow Debian is…? ;)
+
+
+== Requirements
+
+* Linux system with common userland (Busybox or GNU coreutils)
+* POSIX-sh compatible shell (e.g. Busybox ash, dash, Bash)
+* qemu-user and binfmt, or apt-get (needed only for emulation)
+
+
+== Usage
+
+Read documentation in link:{script-name}[{script-name}].
+See link:.travis.yml[.travis.yml] for Travis example.
+
+You can copy link:{script-name}[{script-name}] into your repository or download it on demand, e.g.:
+
+[source, sh, subs="verbatim, attributes"]
+wget https://raw.githubusercontent.com/{gh-name}/v{version}/{script-name}
+
+
+== License
+
+This project is licensed under http://opensource.org/licenses/MIT/[MIT License].
+For the full text of the license, see the link:LICENSE[LICENSE] file.
