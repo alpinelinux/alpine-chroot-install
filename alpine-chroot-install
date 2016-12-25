@@ -13,15 +13,12 @@
 # It also creates script "enter-chroot" inside the chroot directory, that may
 # be used to enter the chroot environment. That script do the following:
 #
-#   1. saves subset* of environment variables and PWD,
+#   1. saves environment variables specified by $CHROOT_KEEP_VARS and PWD,
 #   2. chroots into $CHROOT_DIR,
 #   3. starts clean environment using "env -i",
 #   4. switches user and simulates full login using "su -l",
 #   5. loads saved environment variables and changes directory to saved PWD,
 #   6. executes specified command or "sh" if not provided.
-#
-# *All variables except: _, HOME, LANG, LANGUAGE, LC_.*, LOGNAME, LS_COLORS,
-# MAIL, PATH, OLDPWD, PWD, SHELL, SHLVL, SUDO_.*, USERNAME, USER.
 #
 # Example:
 #   sudo alpine-chroot-install -d /alpine -p build-base -p cmake
