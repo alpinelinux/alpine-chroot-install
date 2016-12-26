@@ -160,7 +160,7 @@ gen_chroot_script() {
 : ${EXTRA_REPOS:=}
 : ${TEMP_DIR:="/tmp/alpine"}
 
-while getopts 'a:b:d:i:m:p:r:t:hv' OPTION; do
+while getopts 'a:b:d:i:k:m:p:r:t:hv' OPTION; do
 	case "$OPTION" in
 		a) ARCH="$OPTARG";;
 		b) ALPINE_BRANCH="$OPTARG";;
