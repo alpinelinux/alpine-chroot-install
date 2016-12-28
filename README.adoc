@@ -28,6 +28,9 @@ Do you see how bloated and slow Debian is…? ;)
 * POSIX-sh compatible shell (e.g. Busybox ash, dash, Bash)
 * qemu-user and binfmt, or apt-get (needed only for emulation)
 
+WARNING: QEMU <2.6 doesn’t support syscall `getrandom` (384 on ARM) in qemu-user which may cause trouble with Alpine v3.5 and newer.
+         If you’re on a Debian-based distro, just install `qemu-user-static` from Ubuntu Yakkety or newer.
+
 
 == Usage
 
