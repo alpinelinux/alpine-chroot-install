@@ -138,7 +138,7 @@ gen_chroot_script() {
 		[ "$(id -u)" -eq 0 ] || _sudo='sudo'
 
 		tmpfile="$(mktemp)"
-		export | grep -E "^[^=]+ ${ENV_FILTER_REGEX}=" > "$tmpfile" || true
+		export | sed -En "^([^=]+ ${ENV_FILTER_REGEX}=)('.*'|\".*\")$" > "$tmpfile" || true
 
 		cd "$(dirname "$0")"
 		$_sudo mv "$tmpfile" env.sh
