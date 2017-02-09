@@ -45,7 +45,7 @@
 #                          Default: ARCH CI TRAVIS_.*.
 #
 #   -m ALPINE_MIRROR...    URI of the Aports mirror to fetch packages from
-#                          (default is https://fr.alpinelinux.org/alpine).
+#                          (default is https://dl-cdn.alpinelinux.org/alpine).
 #
 #   -p ALPINE_PACKAGES...  Alpine packages to install into the chroot (default is
 #                          build-base).
@@ -71,7 +71,7 @@ set -eu
 #=======================  C o n s t a n t s  =======================#
 
 # We assume that host is x86_64 just to simplify this script.
-APK_TOOLS_URI='http://fr.alpinelinux.org/alpine/v3.4/main/x86_64/apk-tools-static-2.6.7-r0.apk'
+APK_TOOLS_URI='http://dl-cdn.alpinelinux.org/alpine/v3.4/main/x86_64/apk-tools-static-2.6.7-r0.apk'
 APK_TOOLS_SHA256='342458308b8ebdb6a91d347b6b2cced7349c0cd0560a7fd7cdd71c5e1aa2b9f3'
 APK_KEYS_URI='http://alpinelinux.org/keys'
 APK_KEYS_SHA256="\
@@ -151,7 +151,7 @@ gen_chroot_script() {
 #============================  M a i n  ============================#
 
 : ${ALPINE_BRANCH:="v3.4"}
-: ${ALPINE_MIRROR:="https://fr.alpinelinux.org/alpine"}
+: ${ALPINE_MIRROR:="https://dl-cdn.alpinelinux.org/alpine"}
 : ${ALPINE_PACKAGES:="build-base"}
 : ${ARCH:=}
 : ${BIND_DIR:="$(pwd)"}
