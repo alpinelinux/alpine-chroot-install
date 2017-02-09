@@ -81,7 +81,7 @@ APK_KEYS_SHA256="\
 	1bb2a846c0ea4ca9d0e7862f970863857fc33c32f5506098c636a62a726a847b  alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub
 	12f899e55a7691225603d6fb3324940fc51cd7f133e7ead788663c2b7eecb00c  alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub
 	73867d92083f2f8ab899a26ccda7ef63dfaa0032a938620eda605558958a8041  alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub"
-VERSION='0.1.1'
+VERSION='0.1.2'
 
 
 #=======================  F u n c t i o n s  =======================#
