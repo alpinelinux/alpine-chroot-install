@@ -1,6 +1,6 @@
 = Install Alpine Linux in chroot
 :script-name: alpine-chroot-install
-:gh-name: jirutka/{script-name}
+:gh-name: alpinelinux/{script-name}
 :version: 0.1.3
 
 ifdef::env-github[]

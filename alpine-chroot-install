@@ -64,7 +64,7 @@
 # Each option can be also provided by environment variable. If both option and
 # variable is specified, then the option takes precedence.
 #
-# https://github.com/jirutka/alpine-chroot-install
+# https://github.com/alpinelinux/alpine-chroot-install
 #---
 set -eu
 
