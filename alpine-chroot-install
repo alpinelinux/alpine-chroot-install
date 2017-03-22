@@ -62,7 +62,8 @@
 #   -v                     Print version and exit.
 #
 # Each option can be also provided by environment variable. If both option and
-# variable is specified, then the option takes precedence.
+# variable is specified and the option accepts only one argument, then the
+# option takes precedence.
 #
 # https://github.com/alpinelinux/alpine-chroot-install
 #---
@@ -150,6 +151,22 @@ gen_chroot_script() {
 
 #============================  M a i n  ============================#
 
+while getopts 'a:b:d:i:k:m:p:r:t:hv' OPTION; do
+	case "$OPTION" in
+		a) ARCH="$OPTARG";;
+		b) ALPINE_BRANCH="$OPTARG";;
+		d) CHROOT_DIR="$OPTARG";;
+		i) BIND_DIR="$OPTARG";;
+		k) CHROOT_KEEP_VARS="${CHROOT_KEEP_VARS:-} $OPTARG";;
+		m) ALPINE_MIRROR="$OPTARG";;
+		p) ALPINE_PACKAGES="${ALPINE_PACKAGES:-} $OPTARG";;
+		r) EXTRA_REPOS="${EXTRA_REPOS:-} $OPTARG";;
+		t) TEMP_DIR="$OPTARG";;
+		h) usage; exit 0;;
+		v) echo "alpine-chroot-install $VERSION"; exit 0;;
+	esac
+done
+
 : ${ALPINE_BRANCH:="v3.4"}
 : ${ALPINE_MIRROR:="https://nl.alpinelinux.org/alpine"}
 : ${ALPINE_PACKAGES:="build-base"}
@@ -160,21 +177,6 @@ gen_chroot_script() {
 : ${EXTRA_REPOS:=}
 : ${TEMP_DIR:="/tmp/alpine"}
 
-while getopts 'a:b:d:i:k:m:p:r:t:hv' OPTION; do
-	case "$OPTION" in
-		a) ARCH="$OPTARG";;
-		b) ALPINE_BRANCH="$OPTARG";;
-		d) CHROOT_DIR="$OPTARG";;
-		i) BIND_DIR="$OPTARG";;
-		k) CHROOT_KEEP_VARS="$CHROOT_KEEP_VARS $OPTARG";;
-		m) ALPINE_MIRROR="$OPTARG";;
-		p) ALPINE_PACKAGES="$ALPINE_PACKAGES $OPTARG";;
-		r) EXTRA_REPOS="$EXTRA_REPOS $OPTARG";;
-		t) TEMP_DIR="$OPTARG";;
-		h) usage; exit 0;;
-		v) echo "alpine-chroot-install $VERSION"; exit 0;;
-	esac
-done
 
 if [ "$(id -u)" -ne 0 ]; then
 	die 'This script must be run as root!'
