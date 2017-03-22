@@ -165,7 +165,7 @@ while getopts 'a:b:d:i:k:m:p:r:t:hv' OPTION; do
 		a) ARCH="$OPTARG";;
 		b) ALPINE_BRANCH="$OPTARG";;
 		d) CHROOT_DIR="$OPTARG";;
-		i) BIND_DIR="$BIND_DIR";;
+		i) BIND_DIR="$OPTARG";;
 		k) CHROOT_KEEP_VARS="$CHROOT_KEEP_VARS $OPTARG";;
 		m) ALPINE_MIRROR="$OPTARG";;
 		p) ALPINE_PACKAGES="$ALPINE_PACKAGES $OPTARG";;
