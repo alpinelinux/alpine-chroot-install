@@ -107,7 +107,7 @@ normalize_arch() {
 	esac
 }
 
-wgets() {(
+wgets() (
 	local url="$1"
 	local sha256="$2"
 	local dest="${3:-.}"
@@ -117,7 +117,7 @@ wgets() {(
 		&& rm -f "${url##*/}" \
 		&& wget -T 10 "$url" \
 		&& echo "$sha256  ${url##*/}" | sha256sum -c
-)}
+)
 
 usage() {
 	sed -En '/^#---/,/^#---/p' "$0" | sed -E 's/^# ?//; 1d;$d;'
