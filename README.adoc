@@ -1,5 +1,6 @@
 = Install Alpine Linux in chroot
 :script-name: alpine-chroot-install
+:script-sha1: c5f9bf7705dab5d1c1e36fd400043f6892519a98
 :gh-name: alpinelinux/{script-name}
 :version: 0.1.3
 
@@ -40,7 +41,9 @@ See link:.travis.yml[.travis.yml] for Travis example.
 You can copy link:{script-name}[{script-name}] into your repository or download it on demand, e.g.:
 
 [source, sh, subs="verbatim, attributes"]
-wget https://raw.githubusercontent.com/{gh-name}/v{version}/{script-name}
+wget https://raw.githubusercontent.com/{gh-name}/v{version}/{script-name} \
+    && echo '{script-sha1}  {script-name}' | sha1sum -c \
+    || exit 1
 
 
 == License
