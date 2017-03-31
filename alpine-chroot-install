@@ -253,6 +253,7 @@ einfo 'Binding filesystems into chroot'
 mount -v -t proc none proc
 mount -v --rbind /sys sys
 mount -v --rbind /dev dev
+mount -v --rbind /run run
 
 mkdir -p "${CHROOT_DIR}${BIND_DIR}"
 mount -v --bind "$BIND_DIR" "${CHROOT_DIR}${BIND_DIR}"
