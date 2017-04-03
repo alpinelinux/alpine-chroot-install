@@ -8,6 +8,7 @@ env:
   matrix:
     - ARCH=x86_64
     - ARCH=armhf
+    - ARCH=aarch64
 install:
   - sudo ./alpine-chroot-install
 script:
