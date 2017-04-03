@@ -11,7 +11,7 @@ endif::env-github[]
 This `alpine-chroot-install` script simplifies installation of https://alpinelinux.org/[Alpine Linux] in chroot.
 Optionally it also utilizes _qemu-user_ and _binfmt_ to emulate different architecture.
 
-The main purpose of this script is to easily create Alpine environment on debian-based CI (e.g. https://travis-ci.org/[Travis CI]) and possibly emulate ARM on x86_64 CI server.
+The main purpose of this script is to easily create Alpine environment on debian-based CI (e.g. https://travis-ci.org/[Travis CI]) and possibly emulate other architectures (e.g. ARM) on x86_64 CI server.
 
 Installation of Alpine Linux is a matter of seconds.
 When you run this script on Travis CI, it takes *only 32 seconds* to initialize VM, install Alpine into chroot including gcc build environment and execute first command!
