@@ -72,8 +72,8 @@ set -eu
 #=======================  C o n s t a n t s  =======================#
 
 # We assume that host is x86_64 just to simplify this script.
-APK_TOOLS_URI='http://nl.alpinelinux.org/alpine/v3.4/main/x86_64/apk-tools-static-2.6.7-r0.apk'
-APK_TOOLS_SHA256='342458308b8ebdb6a91d347b6b2cced7349c0cd0560a7fd7cdd71c5e1aa2b9f3'
+APK_TOOLS_URI='http://nl.alpinelinux.org/alpine/v3.4/main/x86_64/apk-tools-static-2.6.8-r1.apk'
+APK_TOOLS_SHA256='5e778ac805b9430f2585be204728db533bb392f48e4c448aa46ac583c5673366'
 APK_KEYS_URI='http://alpinelinux.org/keys'
 APK_KEYS_SHA256="\
 	9c102bcc376af1498d549b77bdbfa815ae86faa1d2d82f040e616b18ef2df2d4  alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
