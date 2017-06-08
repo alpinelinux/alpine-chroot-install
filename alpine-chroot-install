@@ -209,14 +209,14 @@ if [ -n "$ARCH" ] && [ $(normalize_arch $ARCH) != $(normalize_arch $(uname -m)) 
 	if [ ! -x /usr/bin/qemu-$qemu_arch-static ]; then
 		ewarn "/usr/bin/qemu-$qemu_arch-static not found, trying to install it..."
 
-		apt-get install -y qemu-user-static \
+		apt-get install -y --no-install-recommends qemu-user-static \
 			|| die 'Failed to install qemu-user-static using apt-get!'
 	fi
 
 	if [ ! -e /proc/sys/fs/binfmt_misc/qemu-$qemu_arch ]; then
 		ewarn "binfmt support for qemu-$qemu_arch is not available, trying to install/enable it..."
 
-		apt-get install -y binfmt-support \
+		apt-get install -y --no-install-recommends binfmt-support \
 			|| die 'Failed to install binfmt-support using apt-get!'
 		update-binfmts --enable \
 			|| die 'Failed to enable binfmt!'
