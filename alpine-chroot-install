@@ -255,23 +255,11 @@ if [ "$(id -u)" -ne 0 ]; then
 	die 'This script must be run as root!'
 fi
 
-
-einfo 'Downloading apk-tools-static'
-
-wgets "$APK_TOOLS_URI" "$APK_TOOLS_SHA256" "$TEMP_DIR"
-tar -C "$TEMP_DIR" -xzf "$TEMP_DIR/${APK_TOOLS_URI##*/}"
-
-
-einfo 'Downloading APK keys'
-
-echo "$APK_KEYS_SHA256" | while read sha256 keyname; do
-	wgets "$APK_KEYS_URI/$keyname" $sha256 "$CHROOT_DIR"/etc/apk/keys \
-		|| die 'Failed to download or verify APK key!'
-done
-
-
 mkdir -p "$CHROOT_DIR"
 cd "$CHROOT_DIR"
+
+
+# Install QEMU user mode emulation if needed
 
 if [ -n "$ARCH" ] && [ $(normalize_arch $ARCH) != $(normalize_arch $(uname -m)) ]; then
 	qemu_arch="$(normalize_arch $ARCH)"
@@ -296,6 +284,20 @@ if [ -n "$ARCH" ] && [ $(normalize_arch $ARCH) != $(normalize_arch $(uname -m)) 
 	mkdir -p usr/bin
 	cp -v "$qemu_binary" usr/bin/
 fi
+
+
+einfo 'Downloading apk-tools-static'
+
+wgets "$APK_TOOLS_URI" "$APK_TOOLS_SHA256" "$TEMP_DIR"
+tar -C "$TEMP_DIR" -xzf "$TEMP_DIR/${APK_TOOLS_URI##*/}"
+
+
+einfo 'Downloading APK keys'
+
+echo "$APK_KEYS_SHA256" | while read sha256 keyname; do
+	wgets "$APK_KEYS_URI/$keyname" $sha256 "$CHROOT_DIR"/etc/apk/keys \
+		|| die 'Failed to download or verify APK key!'
+done
 
 
 einfo "Installing Alpine Linux ($ARCH) into chroot"
