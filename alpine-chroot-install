@@ -127,7 +127,7 @@ wgets() (
 	mkdir -p "$dest" \
 		&& cd "$dest" \
 		&& rm -f "${url##*/}" \
-		&& wget -T 10 "$url" \
+		&& wget -T 10 --no-verbose "$url" \
 		&& echo "$sha256  ${url##*/}" | sha256sum -c
 )
 
