@@ -150,6 +150,7 @@ gen_chroot_script() {
 		[ "$(id -u)" -eq 0 ] || _sudo='sudo'
 
 		tmpfile="$(mktemp)"
+		chmod 644 "$tmpfile"
 		export | sed -En "s/^([^=]+ ${ENV_FILTER_REGEX}=)('.*'|\".*\")$/\1\3/p" > "$tmpfile" || true
 
 		cd "$(dirname "$0")"
