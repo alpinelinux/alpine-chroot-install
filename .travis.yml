@@ -12,3 +12,4 @@ install:
 script:
   - /alpine/enter-chroot $USER uname -a
   - /alpine/enter-chroot $USER env
+  - sudo /alpine/enter-chroot $USER env
