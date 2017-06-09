@@ -6,9 +6,9 @@
 # This script installs Alpine Linux into a chroot and optionally sets up
 # qemu-user and binfmt to emulate different architecture (e.g. armhf).
 #
-# If qemu-user and binfmt is needed, then it checks if both are available.
-# If not, then it tries to install them using apt-get. Otherwise the script
-# should work on any linux system.
+# If qemu-user and binfmt is needed, the script checks if both are available
+# and qemu-user has version >= 2.6. If not, it tries to install them using
+# apt-get. Beside this the script should work on any Linux system.
 #
 # It also creates script "enter-chroot" inside the chroot directory, that may
 # be used to enter the chroot environment. That script do the following:
@@ -74,6 +74,7 @@ set -eu
 # We assume that host is x86_64 just to simplify this script.
 APK_TOOLS_URI='http://nl.alpinelinux.org/alpine/v3.4/main/x86_64/apk-tools-static-2.6.8-r1.apk'
 APK_TOOLS_SHA256='5e778ac805b9430f2585be204728db533bb392f48e4c448aa46ac583c5673366'
+
 APK_KEYS_URI='http://alpinelinux.org/keys'
 APK_KEYS_SHA256="\
 	9c102bcc376af1498d549b77bdbfa815ae86faa1d2d82f040e616b18ef2df2d4  alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
@@ -83,6 +84,15 @@ APK_KEYS_SHA256="\
 	73867d92083f2f8ab899a26ccda7ef63dfaa0032a938620eda605558958a8041  alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub
 	9a4cd858d9710963848e6d5f555325dc199d1c952b01cf6e64da2c15deedbd97  alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub
 	780b3ed41786772cbc7b68136546fa3f897f28a23b30c72dde6225319c44cfff  alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub"
+
+# Minimal required version of QEMU emulator.
+QEMU_MIN_VER='2.6'
+
+# Name of Ubuntu release to install qemu-user-static from if package for
+# the host system is older than $QEMU_MIN_VER.
+QEMU_UBUNTU_REL='zesty'
+
+# Version of alpine-chroot-install script.
 VERSION='0.2.1'
 
 
@@ -149,6 +159,68 @@ gen_chroot_script() {
 	EOF
 }
 
+#------------------------- Debian/Ubuntu ---------------------------#
+
+alias cmp_versions='dpkg --compare-versions'
+alias apt_install='apt-get install -y --no-install-recommends'
+
+# Adds repository of the specified Ubuntu release to the sources list
+# and pins it with priority -1.
+# $1: ubuntu release name
+add_ubuntu_repo() {
+	local release="$1"
+	local source_list="/etc/apt/sources.list.d/ubuntu-$release.list"
+
+	echo "deb http://archive.ubuntu.com/ubuntu $release main universe" >> $source_list
+	cat >> /etc/apt/preferences.d/ubuntu-$release <<-EOF
+		Package: *
+		Pin: release n=$release
+		Pin-Priority: -1
+	EOF
+
+	apt-get -q update -o Dir::Etc::sourcelist="$source_list"
+}
+
+# Prints version of the specified APT package that would be installed.
+# $1: package name
+apt_pkgver() {
+	apt-cache policy "$1" | sed -En 's/^\s*Candidate:( [0-9]+:| )(\S+).*/\2/p'
+}
+
+# Prints version of the given QEMU binary.
+# $1: qemu binary
+qemu_version() {
+	"$1" --version | sed -En 's/^.*version ([0-9.]+).*/\1/p'
+}
+
+# Installs and enables binfmt-support on Debian/Ubuntu host.
+install_binfmt_support() {
+	apt_install binfmt-support \
+		|| die 'Failed to install binfmt-support using apt-get!'
+
+	update-binfmts --enable \
+		|| die 'Failed to enable binfmt!'
+}
+
+# Installs QEMU user mode emulation binaries on Debian/Ubuntu host.
+install_qemu_user() {
+	local target_rel=''
+	local qemu_ver=$(apt_pkgver qemu-user-static)
+
+	if ! cmp_versions "$qemu_ver" ge "$QEMU_MIN_VER"; then
+		ewarn "Package qemu-user-static available for your system is too old ($qemu_ver)"
+		ewarn "Installing newer version from repository of ubuntu $QEMU_UBUNTU_REL..."
+
+		add_ubuntu_repo $QEMU_UBUNTU_REL \
+			|| die "Failed to add repository of ubuntu $QEMU_UBUNTU_REL!"
+
+		target_rel="--target-release $QEMU_UBUNTU_REL"
+	fi
+
+	apt_install $target_rel qemu-user-static \
+		|| die 'Failed to install qemu-user-static using apt-get!'
+}
+
 
 #============================  M a i n  ============================#
 
@@ -202,32 +274,31 @@ mkdir -p "$CHROOT_DIR"
 cd "$CHROOT_DIR"
 
 if [ -n "$ARCH" ] && [ $(normalize_arch $ARCH) != $(normalize_arch $(uname -m)) ]; then
-	einfo "Preparing system for user emulation of $ARCH"
-
 	qemu_arch="$(normalize_arch $ARCH)"
+	qemu_binary="/usr/bin/qemu-$qemu_arch-static"
 
-	if [ ! -x /usr/bin/qemu-$qemu_arch-static ]; then
-		ewarn "/usr/bin/qemu-$qemu_arch-static not found, trying to install it..."
+	if [ ! -x "$qemu_binary" ]; then
+		einfo 'Installing qemu-user-static on host system...'
+		install_qemu_user
 
-		apt-get install -y --no-install-recommends qemu-user-static \
-			|| die 'Failed to install qemu-user-static using apt-get!'
+	elif ! cmp_versions "$(qemu_version $qemu_binary)" ge $QEMU_MIN_VER; then
+		ver=$(qemu_version $qemu_binary)
+		ewarn "${qemu_binary##*/} on host system is too old ($ver), minimal required version is $QEMU_MIN_VER"
+		ewarn 'Installing newer version...'
+		install_qemu_user
 	fi
 
 	if [ ! -e /proc/sys/fs/binfmt_misc/qemu-$qemu_arch ]; then
-		ewarn "binfmt support for qemu-$qemu_arch is not available, trying to install/enable it..."
-
-		apt-get install -y --no-install-recommends binfmt-support \
-			|| die 'Failed to install binfmt-support using apt-get!'
-		update-binfmts --enable \
-			|| die 'Failed to enable binfmt!'
+		einfo 'Installing and enabling binfmt-support on host system...'
+		install_binfmt_support
 	fi
 
 	mkdir -p usr/bin
-	cp -v /usr/bin/qemu-$qemu_arch-static usr/bin/
+	cp -v "$qemu_binary" usr/bin/
 fi
 
 
-einfo 'Installing Alpine Linux into chroot'
+einfo "Installing Alpine Linux ($ARCH) into chroot"
 
 mkdir -p "$CHROOT_DIR"/etc/apk
 cd "$CHROOT_DIR"

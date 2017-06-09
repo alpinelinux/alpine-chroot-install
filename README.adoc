@@ -27,10 +27,11 @@ Do you see how bloated and slow Debian is…? ;)
 
 * Linux system with common userland (Busybox or GNU coreutils)
 * POSIX-sh compatible shell (e.g. Busybox ash, dash, Bash, ZSH)
-* qemu-user and binfmt, or apt-get (needed only for emulation)
+* qemu-user ≥ 2.6 and binfmt, or apt-get (needed only for emulation of different architecture)
 
-WARNING: QEMU <2.6 doesn’t support syscall `getrandom` (384 on ARM) in qemu-user which may cause trouble with Alpine v3.5 and newer.
-         If you’re on a Debian-based distro, just install `qemu-user-static` from Ubuntu Yakkety or newer.
+Note that QEMU older than 2.6 doesn’t support syscall `getrandom` (384 on ARM) in qemu-user which may cause trouble with Alpine v3.5 and newer.
+If older version of qemu-user is detected, the script tries to install newer version of `qemu-user-static` using apt-get.
+If there’s no newer version in the default system’s repository, it installs `qemu-user-static` from the Ubuntu Zesty’s repository.
 
 
 == Usage
