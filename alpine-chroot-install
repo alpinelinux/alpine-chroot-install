@@ -93,7 +93,7 @@ QEMU_MIN_VER='2.6'
 QEMU_UBUNTU_REL='zesty'
 
 # Version of alpine-chroot-install script.
-VERSION='0.2.1'
+VERSION='0.3.0'
 
 
 #=======================  F u n c t i o n s  =======================#
