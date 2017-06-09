@@ -30,7 +30,7 @@
 #                          from the host's architecture, then it will be emulated
 #                          using qemu-user. Options: x86_64, armhf, aarch64.
 #
-#   -b ALPINE_BRANCH       Alpine branch to install (default is v3.5).
+#   -b ALPINE_BRANCH       Alpine branch to install (default is v3.6).
 #
 #   -d CHROOT_DIR          Absolute path to the directory where Alpine chroot
 #                          should be installed (default is /alpine).
@@ -240,7 +240,7 @@ while getopts 'a:b:d:i:k:m:p:r:t:hv' OPTION; do
 	esac
 done
 
-: ${ALPINE_BRANCH:="v3.5"}
+: ${ALPINE_BRANCH:="v3.6"}
 : ${ALPINE_MIRROR:="https://nl.alpinelinux.org/alpine"}
 : ${ALPINE_PACKAGES:="build-base"}
 : ${ARCH:=}
