@@ -309,7 +309,7 @@ echo "$APK_KEYS_SHA256" | while read sha256 keyname; do
 done
 
 
-einfo "Installing Alpine Linux ($ARCH) into chroot"
+einfo "Installing Alpine Linux $ALPINE_BRANCH ($ARCH) into chroot"
 
 mkdir -p "$CHROOT_DIR"/etc/apk
 cd "$CHROOT_DIR"
