@@ -10,6 +10,7 @@ env:
 install:
   - sudo ./alpine-chroot-install
 script:
-  - /alpine/enter-chroot $USER uname -a
-  - /alpine/enter-chroot $USER env
-  - sudo /alpine/enter-chroot $USER env
+  - /alpine/enter-chroot uname -a
+  - /alpine/enter-chroot env
+  - /alpine/enter-chroot -u $USER env
+  - sudo /alpine/enter-chroot -u $USER env

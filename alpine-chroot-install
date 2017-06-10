@@ -22,7 +22,7 @@
 #
 # Example:
 #   sudo alpine-chroot-install -d /alpine -p build-base -p cmake
-#	/alpine/enter-chroot $USER ./build
+#	/alpine/enter-chroot -u $USER ./build
 #
 # Options and environment variables:
 #   -a ARCH                CPU architecture for the chroot. If not set, then it's
@@ -148,7 +148,10 @@ gen_chroot_script() {
 	fi
 	cat <<-'EOF'
 
-		user="${1:-root}"; shift
+		user='root'
+		if [ $# -ge 2 ] && [ "$1" = '-u' ]; then
+		    user="$2"; shift 2
+		fi
 		cmd="${@:-sh}"
 		oldpwd="$(pwd)"
 		[ "$(id -u)" -eq 0 ] || _sudo='sudo'
@@ -344,7 +347,7 @@ einfo 'Setting up Alpine'
 user_uid="$(stat -c %u "$BIND_DIR")"
 user_name="$(getent passwd "$user_uid" | cut -d: -f1)"
 
-./enter-chroot root <<-EOF
+./enter-chroot <<-EOF
 	set -e
 	apk update
 	apk add $ALPINE_PACKAGES
@@ -361,5 +364,5 @@ EOF
 cat >&2 <<-EOF
 	---
 	Alpine installation is complete
-	Run $CHROOT_DIR/enter-chroot <USER> [command] to enter the chroot.
+	Run $CHROOT_DIR/enter-chroot [-u <user>] [command] to enter the chroot.
 EOF
