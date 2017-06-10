@@ -43,7 +43,7 @@
 #   -k CHROOT_KEEP_VARS... Names of the environment variables to pass from the
 #                          host environment into chroot by the enter-chroot
 #                          script. Name may be an extended regular expression.
-#                          Default: ARCH CI TRAVIS_.*.
+#                          Default: ARCH CI QEMU_EMULATOR TRAVIS_.*.
 #
 #   -m ALPINE_MIRROR...    URI of the Aports mirror to fetch packages from
 #                          (default is https://nl.alpinelinux.org/alpine).
@@ -142,9 +142,12 @@ gen_chroot_script() {
 		set -e
 
 		ENV_FILTER_REGEX='($(echo "$CHROOT_KEEP_VARS" | tr -s ' ' '|'))'
-
 	EOF
+	if [ -n "$QEMU_EMULATOR" ]; then
+		printf 'export QEMU_EMULATOR="%s"' "$QEMU_EMULATOR"
+	fi
 	cat <<-'EOF'
+
 		user="${1:-root}"; shift
 		cmd="${@:-sh}"
 		oldpwd="$(pwd)"
@@ -248,7 +251,7 @@ done
 : ${ARCH:=}
 : ${BIND_DIR:="$(pwd)"}
 : ${CHROOT_DIR:="/alpine"}
-: ${CHROOT_KEEP_VARS:="ARCH CI TRAVIS_.*"}
+: ${CHROOT_KEEP_VARS:="ARCH CI QEMU_EMULATOR TRAVIS_.*"}
 : ${EXTRA_REPOS:=}
 : ${TEMP_DIR:="/tmp/alpine"}
 
@@ -263,17 +266,18 @@ cd "$CHROOT_DIR"
 
 # Install QEMU user mode emulation if needed
 
+QEMU_EMULATOR=''
 if [ -n "$ARCH" ] && [ $(normalize_arch $ARCH) != $(normalize_arch $(uname -m)) ]; then
 	qemu_arch="$(normalize_arch $ARCH)"
-	qemu_binary="/usr/bin/qemu-$qemu_arch-static"
+	QEMU_EMULATOR="/usr/bin/qemu-$qemu_arch-static"
 
-	if [ ! -x "$qemu_binary" ]; then
+	if [ ! -x "$QEMU_EMULATOR" ]; then
 		einfo 'Installing qemu-user-static on host system...'
 		install_qemu_user
 
-	elif ! cmp_versions "$(qemu_version $qemu_binary)" ge $QEMU_MIN_VER; then
-		ver=$(qemu_version $qemu_binary)
-		ewarn "${qemu_binary##*/} on host system is too old ($ver), minimal required version is $QEMU_MIN_VER"
+	elif ! cmp_versions "$(qemu_version $QEMU_EMULATOR)" ge $QEMU_MIN_VER; then
+		ver=$(qemu_version $QEMU_EMULATOR)
+		ewarn "${QEMU_EMULATOR##*/} on host system is too old ($ver), minimal required version is $QEMU_MIN_VER"
 		ewarn 'Installing newer version...'
 		install_qemu_user
 	fi
@@ -284,7 +288,7 @@ if [ -n "$ARCH" ] && [ $(normalize_arch $ARCH) != $(normalize_arch $(uname -m)) 
 	fi
 
 	mkdir -p usr/bin
-	cp -v "$qemu_binary" usr/bin/
+	cp -v "$QEMU_EMULATOR" usr/bin/
 fi
 
 
