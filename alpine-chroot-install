@@ -344,9 +344,6 @@ mount -v --bind "$BIND_DIR" "${CHROOT_DIR}${BIND_DIR}"
 
 einfo 'Setting up Alpine'
 
-user_uid="$(stat -c %u "$BIND_DIR")"
-user_name="$(getent passwd "$user_uid" | cut -d: -f1)"
-
 ./enter-chroot <<-EOF
 	set -e
 	apk update
@@ -356,8 +353,8 @@ user_name="$(getent passwd "$user_uid" | cut -d: -f1)"
 		echo '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel
 	fi
 
-	if [ $user_uid -ne 0 ]; then
-		adduser -u $user_uid -G users -s /bin/sh -D "$user_name" || true
+	if [ -n "${SUDO_USER:-}" ]; then
+		adduser -u "${SUDO_UID:-1000}" -G users -s /bin/sh -D "${SUDO_USER:-}" || true
 	fi
 EOF
 
