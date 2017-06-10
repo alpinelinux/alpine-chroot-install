@@ -349,7 +349,7 @@ user_name="$(getent passwd "$user_uid" | cut -d: -f1)"
 	fi
 
 	if [ $user_uid -ne 0 ]; then
-		adduser -u $user_uid -G wheel -s /bin/sh -D "$user_name" || true
+		adduser -u $user_uid -G users -s /bin/sh -D "$user_name" || true
 	fi
 EOF
 
