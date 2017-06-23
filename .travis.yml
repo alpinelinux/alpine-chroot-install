@@ -14,3 +14,4 @@ script:
   - /alpine/enter-chroot env
   - /alpine/enter-chroot -u $USER env
   - sudo /alpine/enter-chroot -u $USER env
+  - test "$(/alpine/enter-chroot printf %s! 'Hello, world')" = 'Hello, world!'

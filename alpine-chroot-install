@@ -152,7 +152,6 @@ gen_chroot_script() {
 		if [ $# -ge 2 ] && [ "$1" = '-u' ]; then
 		    user="$2"; shift 2
 		fi
-		cmd="${@:-sh}"
 		oldpwd="$(pwd)"
 		[ "$(id -u)" -eq 0 ] || _sudo='sudo'
 
@@ -163,7 +162,8 @@ gen_chroot_script() {
 		cd "$(dirname "$0")"
 		$_sudo mv "$tmpfile" env.sh
 		$_sudo chroot . /usr/bin/env -i su -l "$user" \
-		    sh -c ". /etc/profile; . /env.sh; cd '$oldpwd' 2>/dev/null; $cmd"
+		    sh -c ". /etc/profile; . /env.sh; cd '$oldpwd' 2>/dev/null; \"\$@\"" \
+		    -- "${@:-sh}"
 	EOF
 	# NOTE: ash does not load login profile when run with QEMU user-mode
 	# emulation (I have no clue why), that's why /etc/profile is sourced here.
