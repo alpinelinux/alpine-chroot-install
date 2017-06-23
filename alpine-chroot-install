@@ -73,7 +73,7 @@ set -eu
 #=======================  C o n s t a n t s  =======================#
 
 # We assume that host is x86_64 just to simplify this script.
-APK_TOOLS_URI='http://nl.alpinelinux.org/alpine/v3.4/main/x86_64/apk-tools-static-2.6.9-r0.apk'
+APK_TOOLS_URI='https://nl.alpinelinux.org/alpine/v3.4/main/x86_64/apk-tools-static-2.6.9-r0.apk'
 APK_TOOLS_SHA256='65dab373a74ecebcb029d9964701d6cfc8e9c6de88706fd96982d52c06d55720'
 
 APK_KEYS_URI='https://alpinelinux.org/keys'
