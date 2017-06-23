@@ -73,8 +73,8 @@ set -eu
 #=======================  C o n s t a n t s  =======================#
 
 # We assume that host is x86_64 just to simplify this script.
-APK_TOOLS_URI='https://nl.alpinelinux.org/alpine/v3.4/main/x86_64/apk-tools-static-2.6.9-r0.apk'
-APK_TOOLS_SHA256='65dab373a74ecebcb029d9964701d6cfc8e9c6de88706fd96982d52c06d55720'
+APK_TOOLS_URI='https://github.com/alpinelinux/apk-tools/releases/download/v2.7.2/apk-tools-2.7.2-x86_64-linux.tar.gz'
+APK_TOOLS_SHA256='e949d3826d08ad41622b29186f960b135711dd96aacfb80ff8238c0fd69d051f'
 
 APK_KEYS_URI='https://alpinelinux.org/keys'
 APK_KEYS_SHA256="\
@@ -297,10 +297,11 @@ if [ -n "$ARCH" ] && [ $(normalize_arch $ARCH) != $(normalize_arch $(uname -m)) 
 fi
 
 
-einfo 'Downloading apk-tools-static'
+einfo 'Downloading static apk-tools'
 
 wgets "$APK_TOOLS_URI" "$APK_TOOLS_SHA256" "$TEMP_DIR"
 tar -C "$TEMP_DIR" -xzf "$TEMP_DIR/${APK_TOOLS_URI##*/}"
+mv "$TEMP_DIR"/apk-tools-*/apk "$TEMP_DIR"/
 
 
 einfo 'Downloading APK keys'
@@ -324,7 +325,7 @@ printf '%s\n' \
 
 cp /etc/resolv.conf etc/resolv.conf
 
-"$TEMP_DIR"/sbin/apk.static \
+"$TEMP_DIR"/apk \
 	--root . --update-cache --initdb --no-progress \
 	${ARCH:+--arch $ARCH} \
 	add alpine-base
