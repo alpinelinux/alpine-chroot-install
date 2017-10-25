@@ -62,6 +62,12 @@
 #
 #   -v                     Print version and exit.
 #
+#   APK_TOOLS_URI          URL of static apk-tools tarball to download.
+#                          Default is x86_64 apk-tools from
+#                          https://github.com/alpinelinux/apk-tools/releases.
+#
+#   APK_TOOLS_SHA256       SHA-256 checksum of $APK_TOOLS_URI.
+#
 # Each option can be also provided by environment variable. If both option and
 # variable is specified and the option accepts only one argument, then the
 # option takes precedence.
@@ -72,9 +78,8 @@ set -eu
 
 #=======================  C o n s t a n t s  =======================#
 
-# We assume that host is x86_64 just to simplify this script.
-APK_TOOLS_URI='https://github.com/alpinelinux/apk-tools/releases/download/v2.8.0/apk-tools-2.8.0-x86_64-linux.tar.gz'
-APK_TOOLS_SHA256='da21cefd2121e3a6cd4e8742b38118b2a1132aad7f707646ee946a6b32ee6df9'
+: ${APK_TOOLS_URI:="https://github.com/alpinelinux/apk-tools/releases/download/v2.8.0/apk-tools-2.8.0-x86_64-linux.tar.gz"}
+: ${APK_TOOLS_SHA256:="da21cefd2121e3a6cd4e8742b38118b2a1132aad7f707646ee946a6b32ee6df9"}
 
 APK_KEYS_URI='https://alpinelinux.org/keys'
 APK_KEYS_SHA256="\
