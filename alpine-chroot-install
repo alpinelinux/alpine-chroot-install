@@ -73,8 +73,8 @@ set -eu
 #=======================  C o n s t a n t s  =======================#
 
 # We assume that host is x86_64 just to simplify this script.
-APK_TOOLS_URI='https://github.com/alpinelinux/apk-tools/releases/download/v2.7.2/apk-tools-2.7.2-x86_64-linux.tar.gz'
-APK_TOOLS_SHA256='e949d3826d08ad41622b29186f960b135711dd96aacfb80ff8238c0fd69d051f'
+APK_TOOLS_URI='https://github.com/alpinelinux/apk-tools/releases/download/v2.8.0/apk-tools-2.8.0-x86_64-linux.tar.gz'
+APK_TOOLS_SHA256='da21cefd2121e3a6cd4e8742b38118b2a1132aad7f707646ee946a6b32ee6df9'
 
 APK_KEYS_URI='https://alpinelinux.org/keys'
 APK_KEYS_SHA256="\
