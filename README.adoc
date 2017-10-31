@@ -31,7 +31,7 @@ Do you see how bloated and slow Debian is…? ;)
 
 Note that QEMU older than 2.6 doesn’t support syscall `getrandom` (384 on ARM) in qemu-user which may cause trouble with Alpine v3.5 and newer.
 If older version of qemu-user is detected, the script tries to install newer version of `qemu-user-static` using apt-get.
-If there’s no newer version in the default system’s repository, it installs `qemu-user-static` from the Ubuntu Zesty’s repository.
+If there’s no newer version in the default system’s repository, it installs `qemu-user-static` from the Ubuntu Artful’s repository.
 
 
 == Usage
