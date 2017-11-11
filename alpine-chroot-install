@@ -78,8 +78,8 @@ set -eu
 
 #=======================  C o n s t a n t s  =======================#
 
-: ${APK_TOOLS_URI:="https://github.com/alpinelinux/apk-tools/releases/download/v2.8.0/apk-tools-2.8.0-x86_64-linux.tar.gz"}
-: ${APK_TOOLS_SHA256:="da21cefd2121e3a6cd4e8742b38118b2a1132aad7f707646ee946a6b32ee6df9"}
+: ${APK_TOOLS_URI:="https://github.com/alpinelinux/apk-tools/releases/download/v2.8.1/apk-tools-2.8.1-x86_64-linux.tar.gz"}
+: ${APK_TOOLS_SHA256:="2ddb375f3f8f3c732e3d0d01b6c3281514727e3b75815636ed04d14689cfe4fb"}
 
 APK_KEYS_URI='https://alpinelinux.org/keys'
 APK_KEYS_SHA256="\
