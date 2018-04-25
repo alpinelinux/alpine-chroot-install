@@ -38,7 +38,7 @@
 #
 #   -i BIND_DIR            Absolute path to the directory on the host system that
 #                          should be mounted on the same path inside the chroot
-#                          (default is PWD).
+#                          (default is PWD, if it's under /home, or none).
 #
 #   -k CHROOT_KEEP_VARS... Names of the environment variables to pass from the
 #                          host environment into chroot by the enter-chroot
@@ -259,11 +259,18 @@ done
 : ${ALPINE_MIRROR:="https://nl.alpinelinux.org/alpine"}
 : ${ALPINE_PACKAGES:="build-base"}
 : ${ARCH:=}
-: ${BIND_DIR:="$(pwd)"}
+: ${BIND_DIR:=}
 : ${CHROOT_DIR:="/alpine"}
 : ${CHROOT_KEEP_VARS:="ARCH CI QEMU_EMULATOR TRAVIS_.*"}
 : ${EXTRA_REPOS:=}
 : ${TEMP_DIR:="/tmp/alpine"}
+
+# Note: Binding $PWD into chroot as default was a bad idea. It's convenient
+# on Travis, but dangerous in general. However, all existing .travis.yml relies
+# on this behaviour, so we can't (shouldn't) remove it completely.
+[ "$BIND_DIR" ] || case "$(pwd)" in
+	/home/*) BIND_DIR="$(pwd)";;
+esac
 
 
 if [ "$(id -u)" -ne 0 ]; then
@@ -346,8 +353,10 @@ mount -v --rbind /sys sys
 mount -v --rbind /dev dev
 mount -v --rbind /run run
 
-mkdir -p "${CHROOT_DIR}${BIND_DIR}"
-mount -v --bind "$BIND_DIR" "${CHROOT_DIR}${BIND_DIR}"
+if [ "$BIND_DIR" ]; then
+	mkdir -p "${CHROOT_DIR}${BIND_DIR}"
+	mount -v --bind "$BIND_DIR" "${CHROOT_DIR}${BIND_DIR}"
+fi
 
 
 einfo 'Setting up Alpine'
