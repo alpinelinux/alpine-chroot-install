@@ -49,7 +49,7 @@
 #                          (default is https://nl.alpinelinux.org/alpine).
 #
 #   -p ALPINE_PACKAGES...  Alpine packages to install into the chroot (default is
-#                          build-base).
+#                          build-base ca-certificates ssl_client).
 #
 #   -r EXTRA_REPOS...      Alpine repositories to be added to
 #                          /etc/apk/repositories (main and community from
@@ -272,7 +272,7 @@ done
 
 : ${ALPINE_BRANCH:="v3.8"}
 : ${ALPINE_MIRROR:="https://nl.alpinelinux.org/alpine"}
-: ${ALPINE_PACKAGES:="build-base"}
+: ${ALPINE_PACKAGES:="build-base ca-certificates ssl_client"}
 : ${ARCH:=}
 : ${BIND_DIR:=}
 : ${CHROOT_DIR:="/alpine"}
