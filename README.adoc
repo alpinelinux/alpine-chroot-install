@@ -17,11 +17,6 @@ Installation of Alpine Linux is a matter of seconds.
 When you run this script on Travis CI, it takes *only 32 seconds* to initialize VM, install Alpine into chroot including gcc build environment and execute first command!
 And just 9 seconds more if you run it with armhf emulation.
 
-To get some comparison, look https://github.com/vmayoral/travis_arm_test[here] how long does this take with minimal Debian.
-360 seconds!
-This is 9 times more.
-Do you see how bloated and slow Debian is…? ;)
-
 
 == Requirements
 
