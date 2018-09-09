@@ -56,7 +56,7 @@
 #                          $ALPINE_MIRROR are always added).
 #
 #   -t TEMP_DIR            Absolute path to the directory where to store temporary
-#                          files (default is /tmp/alpine).
+#                          files (defaults to `mktemp -d`).
 #
 #   -h                     Show this help message and exit.
 #
@@ -278,7 +278,7 @@ done
 : ${CHROOT_DIR:="/alpine"}
 : ${CHROOT_KEEP_VARS:="ARCH CI QEMU_EMULATOR TRAVIS_.*"}
 : ${EXTRA_REPOS:=}
-: ${TEMP_DIR:="/tmp/alpine"}
+: ${TEMP_DIR:=$(mktemp -d || echo /tmp/alpine)}
 
 # Note: Binding $PWD into chroot as default was a bad idea. It's convenient
 # on Travis, but dangerous in general. However, all existing .travis.yml relies
