@@ -359,12 +359,16 @@ einfo 'Binding filesystems into chroot'
 
 mount -v -t proc none proc
 mount -v --rbind /sys sys
+mount --make-rprivate sys
 mount -v --rbind /dev dev
+mount --make-rprivate dev
 mount -v --rbind /run run
+mount --make-rprivate run
 
 if [ "$BIND_DIR" ]; then
 	mkdir -p "${CHROOT_DIR}${BIND_DIR}"
 	mount -v --bind "$BIND_DIR" "${CHROOT_DIR}${BIND_DIR}"
+	mount --make-private "${CHROOT_DIR}${BIND_DIR}"
 fi
 
 
