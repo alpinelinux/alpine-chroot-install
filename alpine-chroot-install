@@ -362,8 +362,13 @@ mount -v --rbind /sys sys
 mount --make-rprivate sys
 mount -v --rbind /dev dev
 mount --make-rprivate dev
-mount -v --rbind /run run
-mount --make-rprivate run
+
+# Some systems (Ubuntu?) symlinks /dev/shm to /run/shm.
+if [ -L /dev/shm ] && [ -d /run/shm ]; then
+	mkdir -p run/shm
+	mount -v --bind /run/shm run/shm
+	mount --make-private run/shm
+fi
 
 if [ "$BIND_DIR" ]; then
 	mkdir -p "${CHROOT_DIR}${BIND_DIR}"
