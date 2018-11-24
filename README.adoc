@@ -1,8 +1,8 @@
 = Install Alpine Linux in chroot
 :script-name: alpine-chroot-install
-:script-sha1: e5dfbbdc0c4b3363b99334510976c86bfa6cb251
+:script-sha1: dcceb34aa63767579f533a7f2e733c4d662b0d1b
 :gh-name: alpinelinux/{script-name}
-:version: 0.9.0
+:version: 0.10.0
 
 ifdef::env-github[]
 image:https://travis-ci.org/{gh-name}.svg?branch=master["Build Status", link="https://travis-ci.org/{gh-name}"]
