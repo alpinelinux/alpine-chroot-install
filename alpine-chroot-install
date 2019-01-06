@@ -140,7 +140,19 @@ normalize_arch() {
 	esac
 }
 
-wgets() (
+fetch_url() {
+	local url="$1"
+
+	if command -v wget >/dev/null; then
+		wget -T 10 --no-verbose "$url"
+	elif command -v curl >/dev/null; then
+		curl --remote-name --connect-timeout 10 -fsSL "$url"
+	else
+		die 'Cannot download a file: neither curl nor wget is available!'
+	fi
+}
+
+download_file() (
 	local url="$1"
 	local sha256="$2"
 	local dest="${3:-.}"
@@ -148,7 +160,7 @@ wgets() (
 	mkdir -p "$dest" \
 		&& cd "$dest" \
 		&& rm -f "${url##*/}" \
-		&& wget -T 10 --no-verbose "$url" \
+		&& fetch_url "$url" \
 		&& echo "$sha256  ${url##*/}" | sha256sum -c
 )
 
@@ -326,7 +338,7 @@ fi
 
 einfo 'Downloading static apk-tools'
 
-wgets "$APK_TOOLS_URI" "$APK_TOOLS_SHA256" "$TEMP_DIR"
+download_file "$APK_TOOLS_URI" "$APK_TOOLS_SHA256" "$TEMP_DIR"
 tar -C "$TEMP_DIR" -xzf "$TEMP_DIR/${APK_TOOLS_URI##*/}"
 mv "$TEMP_DIR"/apk-tools-*/apk "$TEMP_DIR"/
 
