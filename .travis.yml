@@ -7,7 +7,6 @@ env:
     - ARCH=armhf
     - ARCH=aarch64
     - ARCH=ppc64le
-    - ARCH=s390x
 install:
   - sudo ./alpine-chroot-install
 script:
