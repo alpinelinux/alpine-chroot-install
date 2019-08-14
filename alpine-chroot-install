@@ -96,7 +96,7 @@ QEMU_MIN_VER='2.6'
 
 # Name of Ubuntu release to install qemu-user-static from if package for
 # the host system is older than $QEMU_MIN_VER.
-QEMU_UBUNTU_REL='artful'
+QEMU_UBUNTU_REL='bionic'
 
 # Version of alpine-chroot-install script.
 VERSION='0.10.0'
