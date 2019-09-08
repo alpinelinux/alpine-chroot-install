@@ -164,10 +164,42 @@ usage() {
 	sed -En '/^#---help---/,/^#---help---/p' "$0" | sed -E 's/^# ?//; 1d;$d;'
 }
 
+gen_destroy_script() {
+	cat <<-'EOF'
+		#!/bin/sh
+		set -eu
+
+		if [ "${1:-}" = "--help" ] || [ "$#" -gt 1 ] || { [ "${1:-}" != "--remove-chroot" ] && [ "${1:-}" != "" ]; }; then
+			echo "usage:"
+			echo "  $0 [--remove-chroot|--help]"
+			echo ""
+			echo "  --remove-chroot     Delete chroot directory"
+			echo "  --help              Show this help"
+			if [ "${1:-}" = "--help" ]; then
+				exit 0
+			else
+				exit 1
+			fi
+		fi
+
+		SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+		_sudo=""
+		[ "$(id -u)" -eq 0 ] || _sudo='sudo'
+		# Unmounts all filesystem under the specified directory tree.
+		cat /proc/mounts | cut -d' ' -f2 | grep "^$SCRIPT_DIR" | sort -r | while read path; do
+			echo "Unmounting $path" >&2
+			$_sudo umount -fn "$path" || exit 1
+		done
+		if [ "${1:-}" = "--remove-chroot" ]; then
+			$_sudo rm -rf "$SCRIPT_DIR"
+		fi
+	EOF
+}
+
 gen_chroot_script() {
 	cat <<-EOF
 		#!/bin/sh
-		set -e
+		set -eu
 
 		ENV_FILTER_REGEX='($(echo "$CHROOT_KEEP_VARS" | tr -s ' ' '|'))'
 	EOF
@@ -181,6 +213,7 @@ gen_chroot_script() {
 		    user="$2"; shift 2
 		fi
 		oldpwd="$(pwd)"
+		_sudo=""
 		[ "$(id -u)" -eq 0 ] || _sudo='sudo'
 
 		tmpfile="$(mktemp)"
@@ -333,8 +366,8 @@ cp /etc/resolv.conf etc/resolv.conf
 	add alpine-base
 
 gen_chroot_script > enter-chroot
-chmod +x enter-chroot
-
+gen_destroy_script > destroy
+chmod +x enter-chroot destroy
 
 einfo 'Binding filesystems into chroot'
 
@@ -377,5 +410,5 @@ EOF
 cat >&2 <<-EOF
 	---
 	Alpine installation is complete
-	Run $CHROOT_DIR/enter-chroot [-u <user>] [command] to enter the chroot.
+	Run $CHROOT_DIR/enter-chroot [-u <user>] [command] to enter the chroot and $CHROOT_DIR/destroy to destroy it.
 EOF
