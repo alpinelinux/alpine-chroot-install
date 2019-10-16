@@ -99,7 +99,7 @@ QEMU_MIN_VER='2.6'
 QEMU_UBUNTU_REL='bionic'
 
 # Version of alpine-chroot-install script.
-VERSION='0.10.0'
+VERSION='0.11.0'
 
 
 #=======================  F u n c t i o n s  =======================#
