@@ -143,10 +143,10 @@ normalize_arch() {
 fetch_url() {
 	local url="$1"
 
-	if command -v wget >/dev/null; then
-		wget -T 10 --no-verbose "$url"
-	elif command -v curl >/dev/null; then
+	if command -v curl >/dev/null; then
 		curl --remote-name --connect-timeout 10 -fsSL "$url"
+	elif command -v wget >/dev/null; then
+		wget -T 10 --no-verbose "$url"
 	else
 		die 'Cannot download a file: neither curl nor wget is available!'
 	fi
