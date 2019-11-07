@@ -58,6 +58,8 @@
 #   -t TEMP_DIR            Absolute path to the directory where to store temporary
 #                          files (defaults to `mktemp -d`).
 #
+#   -f DNS_IP              An IP to force the nameserver value of resolv.conf.
+#
 #   -h                     Show this help message and exit.
 #
 #   -v                     Print version and exit.
@@ -237,7 +239,7 @@ install_qemu_user() {
 
 #============================  M a i n  ============================#
 
-while getopts 'a:b:d:i:k:m:p:r:t:hv' OPTION; do
+while getopts 'a:b:d:i:k:m:p:r:t:f:hv' OPTION; do
 	case "$OPTION" in
 		a) ARCH="$OPTARG";;
 		b) ALPINE_BRANCH="$OPTARG";;
@@ -248,6 +250,7 @@ while getopts 'a:b:d:i:k:m:p:r:t:hv' OPTION; do
 		p) ALPINE_PACKAGES="${ALPINE_PACKAGES:-} $OPTARG";;
 		r) EXTRA_REPOS="${EXTRA_REPOS:-} $OPTARG";;
 		t) TEMP_DIR="$OPTARG";;
+		f) FORCE_DNS="$OPTARG";;
 		h) usage; exit 0;;
 		v) echo "alpine-chroot-install $VERSION"; exit 0;;
 	esac
@@ -261,6 +264,7 @@ done
 : ${CHROOT_DIR:="/alpine"}
 : ${CHROOT_KEEP_VARS:="ARCH CI QEMU_EMULATOR TRAVIS_.*"}
 : ${EXTRA_REPOS:=}
+: ${FORCE_DNS:=}
 : ${TEMP_DIR:=$(mktemp -d || echo /tmp/alpine)}
 
 # Note: Binding $PWD into chroot as default was a bad idea. It's convenient
@@ -326,6 +330,9 @@ printf '%s\n' \
 dump_alpine_keys etc/apk/keys/
 
 cp /etc/resolv.conf etc/resolv.conf
+if [ "$FORCE_DNS" != "" ]; then
+	echo "nameserver $FORCE_DNS" > etc/resolv.conf
+fi
 
 "$TEMP_DIR"/apk \
 	--root . --update-cache --initdb --no-progress \
