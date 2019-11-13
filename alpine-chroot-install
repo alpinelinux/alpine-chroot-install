@@ -94,10 +94,6 @@ ALPINE_KEYS='
 # Minimal required version of QEMU emulator.
 QEMU_MIN_VER='2.6'
 
-# Name of Ubuntu release to install qemu-user-static from if package for
-# the host system is older than $QEMU_MIN_VER.
-QEMU_UBUNTU_REL='bionic'
-
 # Version of alpine-chroot-install script.
 VERSION='0.11.0'
 
@@ -206,23 +202,6 @@ gen_chroot_script() {
 alias cmp_versions='dpkg --compare-versions'
 alias apt_install='apt-get install -y --no-install-recommends'
 
-# Adds repository of the specified Ubuntu release to the sources list
-# and pins it with priority -1.
-# $1: ubuntu release name
-add_ubuntu_repo() {
-	local release="$1"
-	local source_list="/etc/apt/sources.list.d/ubuntu-$release.list"
-
-	echo "deb http://archive.ubuntu.com/ubuntu $release main universe" >> $source_list
-	cat >> /etc/apt/preferences.d/ubuntu-$release <<-EOF
-		Package: *
-		Pin: release n=$release
-		Pin-Priority: -1
-	EOF
-
-	apt-get -q update -o Dir::Etc::sourcelist="$source_list"
-}
-
 # Prints version of the specified APT package that would be installed.
 # $1: package name
 apt_pkgver() {
@@ -246,20 +225,12 @@ install_binfmt_support() {
 
 # Installs QEMU user mode emulation binaries on Debian/Ubuntu host.
 install_qemu_user() {
-	local target_rel=''
 	local qemu_ver=$(apt_pkgver qemu-user-static)
 
-	if ! cmp_versions "$qemu_ver" ge "$QEMU_MIN_VER"; then
-		ewarn "Package qemu-user-static available for your system is too old ($qemu_ver)"
-		ewarn "Installing newer version from repository of ubuntu $QEMU_UBUNTU_REL..."
+	cmp_versions "$qemu_ver" ge "$QEMU_MIN_VER" \
+		|| die "Package qemu-user-static available for your system is too old ($qemu_ver < $QEMU_MIN_VER)!"
 
-		add_ubuntu_repo $QEMU_UBUNTU_REL \
-			|| die "Failed to add repository of ubuntu $QEMU_UBUNTU_REL!"
-
-		target_rel="--target-release $QEMU_UBUNTU_REL"
-	fi
-
-	apt_install $target_rel qemu-user-static \
+	apt_install qemu-user-static \
 		|| die 'Failed to install qemu-user-static using apt-get!'
 }
 
@@ -308,7 +279,7 @@ mkdir -p "$CHROOT_DIR"
 cd "$CHROOT_DIR"
 
 
-# Install QEMU user mode emulation if needed
+# Install QEMU user mode emulation if needed (works only on Debian and derivates)
 
 QEMU_EMULATOR=''
 if [ -n "$ARCH" ] && [ $(normalize_arch $ARCH) != $(normalize_arch $(uname -m)) ]; then
@@ -321,9 +292,7 @@ if [ -n "$ARCH" ] && [ $(normalize_arch $ARCH) != $(normalize_arch $(uname -m)) 
 
 	elif ! cmp_versions "$(qemu_version $QEMU_EMULATOR)" ge $QEMU_MIN_VER; then
 		ver=$(qemu_version $QEMU_EMULATOR)
-		ewarn "${QEMU_EMULATOR##*/} on host system is too old ($ver), minimal required version is $QEMU_MIN_VER"
-		ewarn 'Installing newer version...'
-		install_qemu_user
+		die "${QEMU_EMULATOR##*/} on host system is too old ($ver), minimal required version is $QEMU_MIN_VER"
 	fi
 
 	if [ ! -e /proc/sys/fs/binfmt_misc/qemu-$qemu_arch ]; then
