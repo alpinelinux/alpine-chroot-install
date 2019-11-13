@@ -25,8 +25,7 @@ And just 9 seconds more if you run it with armhf emulation.
 * qemu-user ≥ 2.6 and binfmt, or apt-get (needed only for emulation of different architecture)
 
 Note that QEMU older than 2.6 doesn’t support syscall `getrandom` (384 on ARM) in qemu-user which may cause trouble with Alpine v3.5 and newer.
-If older version of qemu-user is detected, the script tries to install newer version of `qemu-user-static` using apt-get.
-If there’s no newer version in the default system’s repository, it installs `qemu-user-static` from the Ubuntu Artful’s repository.
+If older version of qemu-user is detected, the script fails.
 
 
 == Usage
