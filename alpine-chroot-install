@@ -205,7 +205,7 @@ alias apt_install='apt-get install -y --no-install-recommends'
 # Prints version of the specified APT package that would be installed.
 # $1: package name
 apt_pkgver() {
-	apt-cache policy "$1" | sed -En 's/^\s*Candidate:( [0-9]+:| )(\S+).*/\2/p'
+	LC_ALL=C apt-cache policy "$1" | sed -En 's/^\s*Candidate:( [0-9]+:| )(\S+).*/\2/p'
 }
 
 # Prints version of the given QEMU binary.
