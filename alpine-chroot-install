@@ -92,9 +92,6 @@ ALPINE_KEYS='
 58e4f17d:MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvBxJN9ErBgdRcPr5g4hV\nqyUSGZEKuvQliq2Z9SRHLh2J43+EdB6A+yzVvLnzcHVpBJ+BZ9RV30EM9guck9sh\nr+bryZcRHyjG2wiIEoduxF2a8KeWeQH7QlpwGhuobo1+gA8L0AGImiA6UP3LOirl\nI0G2+iaKZowME8/tydww4jx5vG132JCOScMjTalRsYZYJcjFbebQQolpqRaGB4iG\nWqhytWQGWuKiB1A22wjmIYf3t96l1Mp+FmM2URPxD1gk/BIBnX7ew+2gWppXOK9j\n1BJpo0/HaX5XoZ/uMqISAAtgHZAqq+g3IUPouxTphgYQRTRYpz2COw3NF43VYQrR\nbQIDAQAB
 5e69ca50:MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwXEJ8uVwJPODshTkf2BH\npH5fVVDppOa974+IQJsZDmGd3Ny0dcd+WwYUhNFUW3bAfc3/egaMWCaprfaHn+oS\n4ddbOFgbX8JCHdru/QMAAU0aEWSMybfJGA569c38fNUF/puX6XK/y0lD2SS3YQ/a\noJ5jb5eNrQGR1HHMAd0G9WC4JeZ6WkVTkrcOw55F00aUPGEjejreXBerhTyFdabo\ndSfc1TILWIYD742Lkm82UBOPsOSdSfOdsMOOkSXxhdCJuCQQ70DHkw7Epy9r+X33\nybI4r1cARcV75OviyhD8CFhAlapLKaYnRFqFxlA515e6h8i8ih/v3MSEW17cCK0b\nQwIDAQAB'
 
-# Minimal required version of QEMU emulator.
-QEMU_MIN_VER='2.6'
-
 # Version of alpine-chroot-install script.
 VERSION='0.12.1'
 
@@ -200,20 +197,7 @@ gen_chroot_script() {
 
 #------------------------- Debian/Ubuntu ---------------------------#
 
-alias cmp_versions='dpkg --compare-versions'
 alias apt_install='apt-get install -y --no-install-recommends'
-
-# Prints version of the specified APT package that would be installed.
-# $1: package name
-apt_pkgver() {
-	LC_ALL=C apt-cache policy "$1" | sed -En 's/^\s*Candidate:( [0-9]+:| )(\S+).*/\2/p'
-}
-
-# Prints version of the given QEMU binary.
-# $1: qemu binary
-qemu_version() {
-	"$1" --version | sed -En 's/^.*version ([0-9.]+).*/\1/p'
-}
 
 # Installs and enables binfmt-support on Debian/Ubuntu host.
 install_binfmt_support() {
@@ -226,11 +210,6 @@ install_binfmt_support() {
 
 # Installs QEMU user mode emulation binaries on Debian/Ubuntu host.
 install_qemu_user() {
-	local qemu_ver=$(apt_pkgver qemu-user-static)
-
-	cmp_versions "$qemu_ver" ge "$QEMU_MIN_VER" \
-		|| die "Package qemu-user-static available for your system is too old ($qemu_ver < $QEMU_MIN_VER)!"
-
 	apt_install qemu-user-static \
 		|| die 'Failed to install qemu-user-static using apt-get!'
 }
@@ -290,10 +269,6 @@ if [ -n "$ARCH" ] && [ $(normalize_arch $ARCH) != $(normalize_arch $(uname -m)) 
 	if [ ! -x "$QEMU_EMULATOR" ]; then
 		einfo 'Installing qemu-user-static on host system...'
 		install_qemu_user
-
-	elif ! cmp_versions "$(qemu_version $QEMU_EMULATOR)" ge $QEMU_MIN_VER; then
-		ver=$(qemu_version $QEMU_EMULATOR)
-		die "${QEMU_EMULATOR##*/} on host system is too old ($ver), minimal required version is $QEMU_MIN_VER"
 	fi
 
 	if [ ! -e /proc/sys/fs/binfmt_misc/qemu-$qemu_arch ]; then
