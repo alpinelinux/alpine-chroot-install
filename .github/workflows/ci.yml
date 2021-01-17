@@ -18,6 +18,7 @@ jobs:
       - run: sudo ./alpine-chroot-install -a ${{ matrix.arch }}
 
       - run: /alpine/enter-chroot uname -a
+      - run: '[[ "$(/alpine/enter-chroot uname -m)" == ${{ matrix.arch }}* ]]'
       - run: /alpine/enter-chroot env
       - run: /alpine/enter-chroot -u $USER env
       - run: sudo /alpine/enter-chroot -u $USER env
