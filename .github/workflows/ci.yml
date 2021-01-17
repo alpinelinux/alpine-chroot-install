@@ -10,7 +10,7 @@ jobs:
         arch:
           - x86_64
           - aarch64
-          - armhf
+          - armv7
           - ppc64le
     steps:
       - uses: actions/checkout@v2
