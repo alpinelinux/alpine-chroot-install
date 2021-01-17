@@ -46,7 +46,7 @@
 #                          Default: ARCH CI QEMU_EMULATOR TRAVIS_.*.
 #
 #   -m ALPINE_MIRROR...    URI of the Aports mirror to fetch packages from
-#                          (default is https://nl.alpinelinux.org/alpine).
+#                          (default is http://dl-cdn.alpinelinux.org/alpine).
 #
 #   -p ALPINE_PACKAGES...  Alpine packages to install into the chroot (default is
 #                          build-base ca-certificates ssl_client).
@@ -254,7 +254,7 @@ while getopts 'a:b:d:i:k:m:p:r:t:hv' OPTION; do
 done
 
 : ${ALPINE_BRANCH:="latest-stable"}
-: ${ALPINE_MIRROR:="https://nl.alpinelinux.org/alpine"}
+: ${ALPINE_MIRROR:="http://dl-cdn.alpinelinux.org/alpine"}
 : ${ALPINE_PACKAGES:="build-base ca-certificates ssl_client"}
 : ${ARCH:=}
 : ${BIND_DIR:=}
