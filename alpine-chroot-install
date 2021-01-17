@@ -6,9 +6,9 @@
 # This script installs Alpine Linux into a chroot and optionally sets up
 # qemu-user and binfmt to emulate different architecture (e.g. armhf).
 #
-# If qemu-user and binfmt is needed, the script checks if both are available
-# and qemu-user has version >= 2.6. If not, it tries to install them using
-# apt-get. Beside this the script should work on any Linux system.
+# If qemu-user and binfmt is needed, the script checks if both are available.
+# If not, it tries to install them using apt-get. Beside this the script should
+# work on any Linux system.
 #
 # It also creates script "enter-chroot" inside the chroot directory, that may
 # be used to enter the chroot environment. That script do the following:
