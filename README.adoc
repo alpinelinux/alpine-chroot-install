@@ -5,7 +5,7 @@
 :version: 0.12.1
 
 ifdef::env-github[]
-image:https://travis-ci.org/{gh-name}.svg?branch=master["Build Status", link="https://travis-ci.org/{gh-name}"]
+image:https://github.com/{gh-name}/workflows/CI/badge.svg["Build Status", link="https://github.com/{gh-name}/actions"]
 endif::env-github[]
 
 This `alpine-chroot-install` script simplifies installation of https://alpinelinux.org/[Alpine Linux] in chroot.
@@ -31,7 +31,7 @@ If older version of qemu-user is detected, the script fails.
 == Usage
 
 Read documentation in link:{script-name}[{script-name}].
-See link:.travis.yml[.travis.yml] for Travis example.
+See link:.github/workflows/ci.yml[] for GitHub Actions example.
 
 You can copy link:{script-name}[{script-name}] into your repository or download it on demand, e.g.:
 
