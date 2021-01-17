@@ -12,6 +12,7 @@ jobs:
           - aarch64
           - armv7
           - ppc64le
+          - mips64
     steps:
       - uses: actions/checkout@v2
 
