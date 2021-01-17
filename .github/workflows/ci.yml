@@ -24,3 +24,5 @@ jobs:
       - run: /alpine/enter-chroot -u $USER env
       - run: sudo /alpine/enter-chroot -u $USER env
       - run: test "$(/alpine/enter-chroot printf %s! 'Hello, world')" = 'Hello, world!'
+      - run: /alpine/destroy
+      - run: /alpine/destroy --remove; ! test -d /alpine
