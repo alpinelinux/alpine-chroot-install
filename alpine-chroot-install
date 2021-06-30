@@ -7,8 +7,8 @@
 # qemu-user and binfmt to emulate different architecture (e.g. armhf).
 #
 # If qemu-user and binfmt is needed, the script checks if both are available.
-# If not, it tries to install them using apt-get. Beside this the script should
-# work on any Linux system.
+# If not, it tries to install them using apt-get, dnf, yum or apk. Beside this
+# the script should work on any Linux system.
 #
 # It also creates script "enter-chroot" inside the chroot directory, that may
 # be used to enter the chroot environment. That script do the following:
@@ -231,23 +231,37 @@ gen_destroy_script() {
 	EOF
 }
 
-#------------------------- Debian/Ubuntu ---------------------------#
+#------------------------- Distro-specific tool ---------------------------#
 
-alias apt_install='apt-get install -y --no-install-recommends'
+if command -v apt-get 2>/dev/null; then
+	alias tool_install='apt-get install -y --no-install-recommends'
+	tool=apt
+elif command -v dnf 2>/dev/null; then
+	alias tool_install='dnf install -y'
+	tool=dnf
+elif command -v yum 2>/dev/null; then
+	alias tool_install='yum install -y'
+	tool=yum
+elif command -v apk 2>/dev/null; then
+	alias tool_install='apk add'
+	tool=apk
+fi
 
-# Installs and enables binfmt-support on Debian/Ubuntu host.
+# Installs and enables binfmt-support (only on Debian/Ubuntu host).
 install_binfmt_support() {
-	apt_install binfmt-support \
+	if [ "$tool" != "apt" ]; then return; fi
+
+	tool_install binfmt-support \
 		|| die 'Failed to install binfmt-support using apt-get!'
 
 	update-binfmts --enable \
 		|| die 'Failed to enable binfmt!'
 }
 
-# Installs QEMU user mode emulation binaries on Debian/Ubuntu host.
+# Installs QEMU user mode emulation binaries.
 install_qemu_user() {
-	apt_install qemu-user-static \
-		|| die 'Failed to install qemu-user-static using apt-get!'
+	tool_install "$1" "$2" \
+		|| die "Failed to install $1 $2 using $tool!"
 }
 
 
@@ -300,11 +314,19 @@ cd "$CHROOT_DIR"
 QEMU_EMULATOR=''
 if [ -n "$ARCH" ] && [ $(normalize_arch $ARCH) != $(normalize_arch $(uname -m)) ]; then
 	qemu_arch="$(normalize_arch $ARCH)"
-	QEMU_EMULATOR="/usr/bin/qemu-$qemu_arch-static"
+	QEMU_EMULATOR="/usr/bin/qemu-$qemu_arch"
+	QEMU_PKG=qemu-user-static
+
+	if [ "$tool" = "apk" ]; then
+		QEMU_PKG="qemu-openrc"
+		QEMU_PKG2="qemu-$qemu_arch"
+	else
+		QEMU_EMULATOR="$QEMU_EMULATOR"-static
+	fi
 
 	if [ ! -x "$QEMU_EMULATOR" ]; then
-		einfo 'Installing qemu-user-static on host system...'
-		install_qemu_user
+		einfo "Installing $QEMU_PKG on host system..."
+		install_qemu_user "$QEMU_PKG" "$QEMU_PKG2"
 	fi
 
 	if [ ! -e /proc/sys/fs/binfmt_misc/qemu-$qemu_arch ]; then
