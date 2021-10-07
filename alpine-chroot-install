@@ -291,10 +291,6 @@ if [ "$(id -u)" -ne 0 ]; then
 	die 'This script must be run as root!'
 fi
 
-mkdir -p "$CHROOT_DIR"
-cd "$CHROOT_DIR"
-
-
 # Install QEMU user mode emulation if needed (works only on Debian and derivates)
 
 QEMU_EMULATOR=''
@@ -316,37 +312,37 @@ if [ -n "$ARCH" ] && [ $(normalize_arch $ARCH) != $(normalize_arch $(uname -m)) 
 	cp -v "$QEMU_EMULATOR" usr/bin/
 fi
 
-
-einfo 'Downloading static apk-tools'
-
-download_file "$APK_TOOLS_URI" "$APK_TOOLS_SHA256" "$TEMP_DIR"
-tar -C "$TEMP_DIR" -xzf "$TEMP_DIR/${APK_TOOLS_URI##*/}"
-mv "$TEMP_DIR"/apk-tools-*/apk "$TEMP_DIR"/
-
-
-einfo "Installing Alpine Linux $ALPINE_BRANCH ($ARCH) into chroot"
-
 mkdir -p "$CHROOT_DIR"/etc/apk
 cd "$CHROOT_DIR"
-
-printf '%s\n' \
-	"$ALPINE_MIRROR/$ALPINE_BRANCH/main" \
-	"$ALPINE_MIRROR/$ALPINE_BRANCH/community" \
-	$EXTRA_REPOS \
-	> etc/apk/repositories
-
-dump_alpine_keys etc/apk/keys/
-
 cp /etc/resolv.conf etc/resolv.conf
 
-"$TEMP_DIR"/apk \
-	--root . --update-cache --initdb --no-progress \
-	${ARCH:+--arch $ARCH} \
-	add alpine-base
+# Initial one-time setup
+if [ ! -e 'sbin/apk' ]; then
+	einfo 'Downloading static apk-tools'
 
-gen_chroot_script > enter-chroot
-gen_destroy_script > destroy
-chmod +x enter-chroot destroy
+	download_file "$APK_TOOLS_URI" "$APK_TOOLS_SHA256" "$TEMP_DIR"
+	tar -C "$TEMP_DIR" -xzf "$TEMP_DIR/${APK_TOOLS_URI##*/}"
+	mv "$TEMP_DIR"/apk-tools-*/apk "$TEMP_DIR"/
+
+	einfo "Installing Alpine Linux $ALPINE_BRANCH ($ARCH) into chroot"
+
+	printf '%s\n' \
+		"$ALPINE_MIRROR/$ALPINE_BRANCH/main" \
+		"$ALPINE_MIRROR/$ALPINE_BRANCH/community" \
+		$EXTRA_REPOS \
+		> etc/apk/repositories
+
+	dump_alpine_keys etc/apk/keys/
+
+	"$TEMP_DIR"/apk \
+		--root . --update-cache --initdb --no-progress \
+		${ARCH:+--arch $ARCH} \
+		add alpine-base
+
+	gen_chroot_script > enter-chroot
+	gen_destroy_script > destroy
+	chmod +x enter-chroot destroy
+fi
 
 
 einfo 'Binding filesystems into chroot'
@@ -375,8 +371,11 @@ einfo 'Setting up Alpine'
 
 ./enter-chroot <<-EOF
 	set -e
-	apk update
-	apk add $ALPINE_PACKAGES
+
+	if [ "$ALPINE_PACKAGES" != ' ' ]; then
+		apk update
+		apk add $ALPINE_PACKAGES
+	fi
 
 	if [ -d /etc/sudoers.d ] && [ ! -e /etc/sudoers.d/wheel ]; then
 		echo '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel
