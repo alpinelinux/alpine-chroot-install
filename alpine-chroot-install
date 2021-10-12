@@ -213,7 +213,7 @@ gen_destroy_script() {
 		[ "$(id -u)" -eq 0 ] || _sudo='sudo'
 
 		# Unmounts all filesystem under the specified directory tree.
-		cat /proc/mounts | cut -d' ' -f2 | grep "^$SCRIPT_DIR" | sort -r | while read path; do
+		cat /proc/mounts | cut -d' ' -f2 | grep "^$SCRIPT_DIR." | sort -r | while read path; do
 			echo "Unmounting $path" >&2
 			$_sudo umount -fn "$path" || exit 1
 		done
