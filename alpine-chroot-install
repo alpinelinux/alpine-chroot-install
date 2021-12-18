@@ -62,9 +62,9 @@
 #
 #   -v                     Print version and exit.
 #
-#   APK_TOOLS_URI          URL of static apk-tools tarball to download.
-#                          Default is x86_64 apk-tools from
-#                          https://github.com/alpinelinux/apk-tools/releases.
+#   APK_TOOLS_URI          URL of apk.static to download. Default is x86_64
+#                          binary from
+#                          https://gitlab.alpinelinux.org/alpine/apk-tools/-/packages.
 #
 #   APK_TOOLS_SHA256       SHA-256 checksum of $APK_TOOLS_URI.
 #
@@ -78,8 +78,8 @@ set -eu
 
 #=======================  C o n s t a n t s  =======================#
 
-: ${APK_TOOLS_URI:="https://github.com/alpinelinux/apk-tools/releases/download/v2.10.4/apk-tools-2.10.4-x86_64-linux.tar.gz"}
-: ${APK_TOOLS_SHA256:="efe948160317fe78058e207554d0d9195a3dfcc35f77df278d30448d7b3eb892"}
+: ${APK_TOOLS_URI:="https://gitlab.alpinelinux.org/api/v4/projects/5/packages/generic/v2.12.9/x86_64/apk.static"}
+: ${APK_TOOLS_SHA256:="5176da3d4c41f12a08b82809aca8e7e2e383b7930979651b8958eca219815af5"}
 
 # Alpine APK keys for packages verification.
 ALPINE_KEYS='
@@ -147,6 +147,7 @@ normalize_arch() {
 fetch_url() {
 	local url="$1"
 
+	echo "fetch $url" >&2
 	if command -v curl >/dev/null; then
 		curl --remote-name --connect-timeout 10 -fsSL "$url"
 	elif command -v wget >/dev/null; then
@@ -328,8 +329,7 @@ fi
 einfo 'Downloading static apk-tools'
 
 download_file "$APK_TOOLS_URI" "$APK_TOOLS_SHA256" "$TEMP_DIR"
-tar -C "$TEMP_DIR" -xzf "$TEMP_DIR/${APK_TOOLS_URI##*/}"
-mv "$TEMP_DIR"/apk-tools-*/apk "$TEMP_DIR"/
+chmod +x "$TEMP_DIR"/apk.static
 
 
 einfo "Installing Alpine Linux $ALPINE_BRANCH ($ARCH) into chroot"
@@ -347,7 +347,7 @@ dump_alpine_keys etc/apk/keys/
 
 cp /etc/resolv.conf etc/resolv.conf
 
-"$TEMP_DIR"/apk \
+"$TEMP_DIR"/apk.static \
 	--root . --update-cache --initdb --no-progress \
 	${ARCH:+--arch $ARCH} \
 	add alpine-base
