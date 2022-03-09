@@ -242,7 +242,15 @@ gen_destroy_script() {
 
 #------------------------- Debian/Ubuntu ---------------------------#
 
-alias apt_install='apt-get install -y --no-install-recommends'
+APT_UPDATED=no
+
+apt_install() {
+	if [ "$APT_UPDATED" != yes ]; then
+		apt-get update
+		APT_UPDATED=yes
+	fi
+	apt-get install -y --no-install-recommends "$@"
+}
 
 # Installs and enables binfmt-support on Debian/Ubuntu host.
 install_binfmt_support() {
