@@ -358,7 +358,15 @@ cp /etc/resolv.conf etc/resolv.conf
 "$TEMP_DIR"/apk.static \
 	--root . --update-cache --initdb --no-progress \
 	${ARCH:+--arch $ARCH} \
-	add alpine-base
+	add alpine-baselayout apk-tools busybox busybox-suid musl-utils
+
+# This package contains /etc/os-release, /etc/alpine-release and /etc/issue,
+# but we don't wanna install all its dependencies (e.g. openrc).
+"$TEMP_DIR"/apk.static \
+	--root . \
+	--no-progress \
+	fetch --stdout alpine-base \
+	| tar -xz etc
 
 gen_chroot_script > enter-chroot
 gen_destroy_script > destroy
