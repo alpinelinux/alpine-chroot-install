@@ -11,12 +11,14 @@ endif::env-github[]
 This `alpine-chroot-install` script simplifies installation of https://alpinelinux.org/[Alpine Linux] for testing purposes on any x86_64 Linux system using https://man7.org/linux/man-pages/man1/chroot.1.html[chroot(1)].
 Optionally it also utilizes _qemu-user_ and _binfmt_ to emulate different architecture.
 
-The main purpose of this script is to easily create Alpine environment on Ubuntu-based CI services (e.g. https://github.com/features/actions[GitHub Actions] or https://travis-ci.org/[Travis CI]) and possibly emulate other architectures (e.g. ARM) on x86_64-only CI service.
+The main purpose of this script is to easily create Alpine environment on Ubuntu-based CI services (e.g. https://travis-ci.org/[Travis CI] and similar) and possibly emulate other architectures (e.g. ARM) on x86_64-only CI service.
 
 Installation of Alpine Linux is a matter of a few seconds… *5 seconds* to be more specific.
 It takes just ~5 seconds to prepare a chroot, install fresh Alpine including gcc build environment and execute first command!
 And it doesn’t use any prebuilt rootfs archive or image, and no Docker, of course.
 All you need to install Alpine Linux is just https://github.com/alpinelinux/apk-tools[apk-tools] -- Alpine’s package manager -- which is automatically downloaded by this script.
+
+*Note*: If you use *GitHub Actions*, you’re better off using https://github.com/jirutka/setup-alpine[jirutka/setup-alpine] instead of this script.
 
 
 == Requirements
