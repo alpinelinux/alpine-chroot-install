@@ -388,7 +388,7 @@ if [ -L /dev/shm ] && [ -d /run/shm ]; then
 	mount --make-private run/shm
 fi
 
-if [ "$BIND_DIR" ]; then
+if [ -d "$BIND_DIR" ]; then
 	mkdir -p "${CHROOT_DIR}${BIND_DIR}"
 	mount -v --bind "$BIND_DIR" "${CHROOT_DIR}${BIND_DIR}"
 	mount --make-private "${CHROOT_DIR}${BIND_DIR}"
