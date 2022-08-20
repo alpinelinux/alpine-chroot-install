@@ -102,7 +102,7 @@ ALPINE_KEYS='
 '
 
 # Version of alpine-chroot-install script.
-VERSION='0.13.3'
+VERSION='0.14.0'
 
 
 #=======================  F u n c t i o n s  =======================#
