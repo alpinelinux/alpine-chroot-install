@@ -337,7 +337,8 @@ fi
 einfo 'Downloading static apk-tools'
 
 download_file "$APK_TOOLS_URI" "$APK_TOOLS_SHA256" "$TEMP_DIR"
-chmod +x "$TEMP_DIR"/apk.static
+APK="$TEMP_DIR/apk.static"
+chmod +x "$APK"
 
 
 einfo "Installing Alpine Linux $ALPINE_BRANCH ($ARCH) into chroot"
@@ -355,14 +356,14 @@ dump_alpine_keys etc/apk/keys/
 
 cp /etc/resolv.conf etc/resolv.conf
 
-"$TEMP_DIR"/apk.static \
+"$APK" \
 	--root . --update-cache --initdb --no-progress \
 	${ARCH:+--arch $ARCH} \
 	add alpine-baselayout apk-tools busybox busybox-suid musl-utils
 
 # This package contains /etc/os-release, /etc/alpine-release and /etc/issue,
 # but we don't wanna install all its dependencies (e.g. openrc).
-"$TEMP_DIR"/apk.static \
+"$APK" \
 	--root . \
 	--no-progress \
 	fetch --stdout alpine-base \
