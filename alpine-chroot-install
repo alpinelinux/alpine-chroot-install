@@ -356,18 +356,20 @@ dump_alpine_keys etc/apk/keys/
 
 cp /etc/resolv.conf etc/resolv.conf
 
-"$APK" \
+"$APK" add \
 	--root . --update-cache --initdb --no-progress \
 	${ARCH:+--arch $ARCH} \
-	add alpine-baselayout apk-tools busybox busybox-suid musl-utils
+	alpine-baselayout apk-tools busybox busybox-suid musl-utils
 
-# This package contains /etc/os-release, /etc/alpine-release and /etc/issue,
-# but we don't wanna install all its dependencies (e.g. openrc).
-"$APK" \
-	--root . \
-	--no-progress \
-	fetch --stdout alpine-base \
-	| tar -xz etc
+if "$APK" info --root . --no-progress --quiet alpine-release >/dev/null; then
+	"$APK" add --root . --no-progress alpine-release
+else
+	# In Alpine <3.17, this package contains /etc/os-release,
+	# /etc/alpine-release and /etc/issue, but we don't wanna install all
+	# its dependencies (e.g. openrc).
+	"$APK" fetch --root . --no-progress --stdout alpine-base \
+		| tar -xz etc
+fi
 
 gen_chroot_script > enter-chroot
 gen_destroy_script > destroy
