@@ -78,8 +78,8 @@ set -eu
 
 #=======================  C o n s t a n t s  =======================#
 
-: ${APK_TOOLS_URI:="https://gitlab.alpinelinux.org/api/v4/projects/5/packages/generic/v2.12.10/x86_64/apk.static"}
-: ${APK_TOOLS_SHA256:="d7506bb11327b337960910daffed75aa289d8bb350feab624c52965be82ceae8"}
+: ${APK_TOOLS_URI:="https://gitlab.alpinelinux.org/api/v4/projects/5/packages/generic/v2.14.7/x86_64/apk.static"}
+: ${APK_TOOLS_SHA256:="bdd044e0fd6cc388c5e571e1093efa5f35f7767cc5aa338b0a2576a429009a62"}
 
 # Alpine APK keys for packages verification.
 ALPINE_KEYS='
