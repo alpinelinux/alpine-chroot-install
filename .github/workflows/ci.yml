@@ -14,7 +14,7 @@ jobs:
           - armv7
           - ppc64le
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - run: sudo ./alpine-chroot-install -a ${{ matrix.arch }}
 
